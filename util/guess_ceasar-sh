@@ -1,0 +1,11 @@
+#!/bin/bash
+
+encrypted_message="dlsjvtl av aol uladvyr huk jvtwbaly zljbypaf jvbyzl!\np ht fvby puzaybjavy wyvmlzzvy slbun." 
+
+for offset in {1..12};
+do
+  echo "--------------------------------------------------------";
+  printf "Decrypting with offset %d\n", $offset
+  echo $encrypted_message|../caesr -d"${offset}"
+  echo "--------------------------------------------------------";
+done
