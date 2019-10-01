@@ -91,11 +91,11 @@ bool is_ascii_letter(char c)
 
 int wrap_ascii_val( int x, int lower_bound, int upper_bound )
 {
-  printf( "%c: value is %d\n", x, x);
+  //printf( "%c: value is %d\n", x, x);
   if( x < lower_bound )
-    return upper_bound - ((lower_bound - x) % (upper_bound - lower_bound) - 1);
+    return upper_bound - (lower_bound - x) % (upper_bound - lower_bound) + 1;
   else if( x > upper_bound )
-    return lower_bound - ((lower_bound - x) % (upper_bound - lower_bound) + 1);
+    return lower_bound + (x - lower_bound) % (upper_bound - lower_bound) - 1;
   else
     return x;
 }
@@ -113,20 +113,23 @@ FILE* open_stream (const char* path, const char* mode)
 void proc_cipher( short offset, FILE *fp_in, FILE *fp_out, int out_fmt )
 {
   char c= fgetc(fp_in);
+  int c_offset= 0;
 
   while( c != EOF ){
 
     if( is_ascii_letter(c) ){
+      
       // Are we decoding  or encoding cipher text?
       if( out_fmt == CIPHER_ENCODE )
-        c+= offset;
+        c_offset= c + offset;
       else
-        c-= offset;
+        c_offset= c - offset;
 
-      if( is_ascii_upper(c) )
-        c= wrap_ascii_val( c, ASCII_CAPTL_LOWER_BOUND, ASCII_CAPTL_UPPER_BOUND );
-      else
-        c= wrap_ascii_val( c, ASCII_LOWR_LOWER_BOUND, ASCII_LOWR_UPPER_BOUND );
+      if( is_ascii_upper(c) ){
+        c= wrap_ascii_val( c_offset, ASCII_CAPTL_LOWER_BOUND, ASCII_CAPTL_UPPER_BOUND );
+      }else{
+        c= wrap_ascii_val( c_offset, ASCII_LOWR_LOWER_BOUND, ASCII_LOWR_UPPER_BOUND );
+      }
     }
 
     fputc( c, fp_out );
